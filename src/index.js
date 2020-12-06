@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const port = 8080;
+const fs = require("fs");
 const studentArray = require("./InitialData");
 app.use(express.urlencoded());
 
@@ -38,10 +39,35 @@ app.post("/api/student", function (req, res) {
       currentClass: currClass,
       division: division,
     };
-
-    studentArray.push(obj);
-
     res.send({ id: id });
+  } else {
+    res.sendStatus(400);
+  }
+});
+
+app.put("/api/student/:id", function (req, res) {
+  const id = req.params.id - 1;
+  if (id > 0 && id < studentArray.length) {
+    if (req.body.name) {
+      studentArray[id].name = req.body.name;
+    }
+    if (req.body.currentClass) {
+      studentArray[id].currentClass = req.body.currentClass;
+    }
+    if (req.body.division) {
+      studentArray[id].division = req.body.division;
+    }
+  } else {
+    res.sendStatus(400);
+  }
+});
+
+app.delete("/api/student/:id", function (req, res) {
+  const id = req.params.id - 1;
+  if (id > 0 && id < studentArray.length) {
+    studentArray.splice(id, 1);
+  } else {
+    res.sendStatus(400);
   }
 });
 
