@@ -57,20 +57,27 @@ app.post("/api/student", function (req, res) {
 
 app.put("/api/student/:id", function (req, res) {
   const id = Number(req.params.id);
+  let flag = 0;
   if (id > 0 && id <= studentArray.length) {
     studentArray.forEach((student) => {
       if (student.id === id) {
         if (req.body.name) {
           student.name = req.body.name;
+          flag = 1;
         }
         if (req.body.currentClass) {
           student.currentClass = req.body.currentClass;
+          flag = 1;
         }
         if (req.body.division) {
           student.division = req.body.division;
+          flag = 1;
         }
-
+      }
+      if (flag === 1) {
         res.send(student);
+      } else {
+        res.sendStatus(400);
       }
     });
   } else {
