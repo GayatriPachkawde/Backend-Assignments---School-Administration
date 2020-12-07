@@ -16,10 +16,14 @@ app.get("/api/student", function (req, res) {
   res.send(studentArray);
 });
 app.get("/api/student/:id", function (req, res) {
-  const id = req.params.id - 1;
+  const id = Number(req.params.id);
 
-  if (id > 0 && id < studentArray.length) {
-    res.send(studentArray[id]);
+  if (id > 0 && id <= studentArray.length) {
+    studentArray.forEach((student) => {
+      if (student.id === id) {
+        res.send(student);
+      }
+    });
   } else {
     res.sendStatus(404);
   }
@@ -39,6 +43,12 @@ app.post("/api/student", function (req, res) {
       currentClass: currClass,
       division: division,
     };
+
+    studentArray.push(obj);
+    studentArray.forEach((student) => {
+      JSON.stringify(student);
+    });
+
     res.send({ id: id });
   } else {
     res.sendStatus(400);
@@ -46,28 +56,40 @@ app.post("/api/student", function (req, res) {
 });
 
 app.put("/api/student/:id", function (req, res) {
-  const id = req.params.id - 1;
-  if (id > 0 && id < studentArray.length) {
-    if (req.body.name) {
-      studentArray[id].name = req.body.name;
-    }
-    if (req.body.currentClass) {
-      studentArray[id].currentClass = req.body.currentClass;
-    }
-    if (req.body.division) {
-      studentArray[id].division = req.body.division;
-    }
+  const id = Number(req.params.id);
+  if (id > 0 && id <= studentArray.length) {
+    studentArray.forEach((student) => {
+      if (student.id === id) {
+        if (req.body.name) {
+          student.name = req.body.name;
+        }
+        if (req.body.currentClass) {
+          student.currentClass = req.body.currentClass;
+        }
+        if (req.body.division) {
+          student.division = req.body.division;
+        }
+
+        res.send(student);
+      }
+    });
   } else {
     res.sendStatus(400);
   }
 });
 
 app.delete("/api/student/:id", function (req, res) {
-  const id = req.params.id - 1;
-  if (id > 0 && id < studentArray.length) {
-    studentArray.splice(id, 1);
+  const id = Number(req.params.id);
+
+  if (id > 0 && id <= studentArray.length) {
+    studentArray.forEach((student, idx) => {
+      if (student.id === id) {
+        studentArray.splice(idx, 1);
+        res.sendStatus(200);
+      }
+    });
   } else {
-    res.sendStatus(400);
+    res.sendStatus(404);
   }
 });
 
