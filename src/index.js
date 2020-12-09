@@ -38,7 +38,7 @@ app.post("/api/student", function (req, res) {
 
   if (studentName && currClass && division) {
     const obj = {
-      id: id,
+      id: Number(id),
       name: studentName,
       currentClass: currClass,
       division: division,
@@ -49,7 +49,7 @@ app.post("/api/student", function (req, res) {
       JSON.stringify(student);
     });
 
-    res.send({ id: id });
+    res.send({ id: Number(id) });
   } else {
     res.sendStatus(400);
   }
@@ -74,13 +74,9 @@ app.put("/api/student/:id", function (req, res) {
           flag = 1;
         }
       }
-      if (flag === 1) {
-        res.send(student);
-      } else {
-        res.sendStatus(400);
-      }
     });
-  } else {
+  }
+  if (flag === 0) {
     res.sendStatus(400);
   }
 });
@@ -88,15 +84,14 @@ app.put("/api/student/:id", function (req, res) {
 app.delete("/api/student/:id", function (req, res) {
   const id = Number(req.params.id);
 
-  if (id > 0 && id <= studentArray.length) {
-    studentArray.forEach((student, idx) => {
-      if (student.id === id) {
-        studentArray.splice(idx, 1);
-        res.sendStatus(200);
-      }
-    });
-  } else {
+  const matched = studentArray.findIndex((student) => {
+    return student.id === id;
+  });
+
+  if (matched === -1) {
     res.sendStatus(404);
+  } else {
+    studentArray.splice(matched, 1);
   }
 });
 
