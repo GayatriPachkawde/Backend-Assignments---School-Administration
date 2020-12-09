@@ -92,6 +92,7 @@ app.delete("/api/student/:id", function (req, res) {
     res.sendStatus(404);
   } else {
     studentArray.splice(matched, 1);
+    res.sendStatus(200);
   }
 });
 
