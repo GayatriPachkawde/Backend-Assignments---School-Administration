@@ -81,12 +81,16 @@ app.put("/api/student/:id", (req, res) => {
 });
 
 app.delete("/api/student/:id", (req, res) => {
-  const ind = studentArray.findIndex((student) => student.id == req.params.id);
+  const idToSearch = req.params.id;
 
-  if (ind === -1) res.sendStatus(404);
-  else {
-    const obj = studentArray[ind];
-    studentArray.splice(ind, 1);
+  const matched = studentArray.findIndex(
+    (student) => student.id === Number(idToSearch)
+  );
+
+  if (matched === -1) {
+    res.sendStatus(404);
+  } else {
+    studentArray.splice(matched, 1);
     res.sendStatus(200);
   }
 });
