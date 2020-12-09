@@ -29,70 +29,65 @@ app.get("/api/student/:id", function (req, res) {
   }
 });
 
-app.post("/api/student", function (req, res) {
-  noOfStudents++;
-  const id = noOfStudents;
-  const studentName = req.body.name;
-  const currClass = req.body.currentClass;
-  const division = req.body.division;
-
-  if (studentName && currClass && division) {
-    const obj = {
-      id: Number(id),
-      name: studentName,
-      currentClass: currClass,
-      division: division,
+app.post("/api/student", (req, res) => {
+  if (req.body.name && req.body.currentClass && req.body.division) {
+    const student = {
+      id: studentArray[studentArray.length - 1].id + 1,
+      name: req.body.name,
+      currentClass: Number(req.body.currentClass),
+      division: req.body.division,
     };
 
-    studentArray.push(obj);
-    studentArray.forEach((student) => {
-      JSON.stringify(student);
-    });
-
-    res.send({ id: Number(id) });
+    studentArray.push(student);
+    res.send({ id: student.id });
   } else {
     res.sendStatus(400);
   }
 });
 
-app.put("/api/student/:id", function (req, res) {
-  const id = Number(req.params.id);
-  let flag = 0;
-  if (id > 0 && id <= studentArray.length) {
-    studentArray.forEach((student) => {
-      if (student.id === id) {
-        if (req.body.name) {
-          student.name = req.body.name;
-          flag = 1;
-        }
-        if (req.body.currentClass) {
-          student.currentClass = req.body.currentClass;
-          flag = 1;
-        }
-        if (req.body.division) {
-          student.division = req.body.division;
-          flag = 1;
-        }
+app.put("/api/student/:id", (req, res) => {
+  const objInd = studentArray.findIndex(
+    (student) => student.id == req.params.id
+  );
+  // console.log(objInd);
+  if (objInd === -1) res.sendStatus(400);
+  else {
+    let flag = false;
+    for (let i = 0; i < Object.keys(req.body).length; i++) {
+      if (
+        ["name", "currentClass", "division"].includes(Object.keys(req.body)[i])
+      ) {
+        // console.log(Object.keys(req.body)[i]);
+      } else {
+        flag = true;
+        break;
       }
-    });
-  }
-  if (flag === 0) {
-    res.sendStatus(400);
+    }
+    if (flag) res.sendStatus(400);
+    else {
+      studentArray[objInd].name =
+        req.body.name !== undefined ? req.body.name : studentArray[objInd].name;
+      studentArray[objInd].currentClass =
+        req.body.currentClass !== undefined
+          ? Number(req.body.currentClass)
+          : studentArray[objInd].currentClass;
+      studentArray[objInd].division =
+        req.body.division !== undefined
+          ? req.body.division
+          : studentArray[objInd].division;
+      res.send(studentArray[objInd]);
+    }
   }
 });
 
-app.delete("/api/student/:id", function (req, res) {
-  const id = Number(req.params.id);
+app.delete("/api/student/:id", (req, res) => {
+  const ind = studentArray.findIndex((student) => student.id == req.params.id);
 
-  const matched = studentArray.findIndex((student) => {
-    return student.id === id;
-  });
-
-  if (matched === -1) {
-    res.sendStatus(404);
-  } else {
-    studentArray.splice(matched, 1);
-    res.sendStatus(200);
+  if (ind === -1) res.sendStatus(404);
+  else {
+    const obj = studentArray[ind];
+    studentArray.splice(ind, 1);
+    res.send(obj);
   }
 });
 
