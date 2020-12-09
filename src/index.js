@@ -87,7 +87,7 @@ app.delete("/api/student/:id", (req, res) => {
   else {
     const obj = studentArray[ind];
     studentArray.splice(ind, 1);
-    res.send(obj);
+    res.sendStatus(200);
   }
 });
 
