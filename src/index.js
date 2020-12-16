@@ -1,3 +1,15 @@
+// const mongoose = require("mongoose");
+
+// const marioSchema = new mongoose.Schema({
+//   name: String,
+//   weight: Number,
+// });
+
+// //
+// //module.exports = mongoose.model("marioModel", marioModel);
+// const marioModel = mongoose.model("mariochar", marioSchema);
+// module.exports = marioModel;
+
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
@@ -70,12 +82,12 @@ app.put("/api/student/:id", (req, res) => {
 });
 
 app.delete("/api/student/:id", (req, res) => {
-  const object = studentArray[req.params.id - 1];
-  if (typeof object === "undefined") {
-    res.sendStatus(404);
-  } else {
-    delete studentArray[req.params.id - 1];
+  let id = Number(req.params.id);
+  if (id >= 1 && id <= 7) {
+    studentArray.splice(id, 1);
     res.sendStatus(200);
+  } else {
+    res.sendStatus(404);
   }
 });
 
