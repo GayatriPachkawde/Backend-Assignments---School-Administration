@@ -1,43 +1,40 @@
 const express = require("express");
 const app = express();
-app.use(express.json());
-const studentArray = require("./InitialData.js");
 const bodyParser = require("body-parser");
 const port = 8080;
+const fs = require("fs");
+var studentArray = require("./InitialData");
 app.use(express.urlencoded());
 
 // Parse JSON bodies (as sent by API clients)
-
+app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 // your code goes here
-
 app.get("/api/student", (req, res) => {
   res.send(studentArray);
 });
 app.get("/api/student/:id", (req, res) => {
-  const object = studentArray[req.params.id - 1];
-  if (typeof object === "undefined") {
-    res.sendStatus(404);
+  let id = Number(req.params.id);
+  if (id >= 1 && id <= 7) {
+    res.send({
+      id: studentArray[id - 1].id,
+      name: studentArray[id - 1].name,
+      currentClass: studentArray[id - 1].currentClass,
+      division: studentArray[id - 1].division,
+    });
   } else {
-    res.send(object);
+    res.sendStatus(404);
   }
 });
-app.delete("/api/student/:id", (req, res) => {
-  const object = studentArray[req.params.id - 1];
-  if (typeof object === "undefined") {
-    res.sendStatus(404);
-  } else {
-    delete studentArray[req.params.id - 1];
-    res.sendStatus(200);
-  }
-});
+
 app.post("/api/student", (req, res) => {
-  if (req.body.name && req.body.currentClass && req.body.division) {
-    const id = studentArray.length + 1;
-    const name = req.body.name;
-    const currentClass = Number(req.body.currentClass);
-    const division = req.body.division;
+  const bodyData = req.body;
+  const id = studentArray.length + 1;
+  const name = req.body.name;
+  const currentClass = req.body.currentClass;
+  const division = req.body.division;
+  if (name && currentClass && division) {
     studentArray.push({
       id: id,
       name: name,
@@ -49,12 +46,10 @@ app.post("/api/student", (req, res) => {
     res.sendStatus(400);
   }
 });
-const nullOrUndefined = (variable) => {
-  return variable === null || variable === undefined ? true : false;
-};
+
 app.put("/api/student/:id", (req, res) => {
   const object = studentArray[req.params.id - 1];
-  if (nullOrUndefined(object)) {
+  if (!object) {
     res.sendStatus(400);
   } else {
     if (req.body.name || req.body.currentClass || req.body.division) {
@@ -73,6 +68,17 @@ app.put("/api/student/:id", (req, res) => {
     }
   }
 });
+
+app.delete("/api/student/:id", (req, res) => {
+  const object = studentArray[req.params.id - 1];
+  if (typeof object === "undefined") {
+    res.sendStatus(404);
+  } else {
+    delete studentArray[req.params.id - 1];
+    res.sendStatus(200);
+  }
+});
+
 app.listen(port, () => console.log(`App listening on port ${port}!`));
 
 module.exports = app;
