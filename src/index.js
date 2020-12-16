@@ -41,12 +41,11 @@ app.get("/api/student/:id", (req, res) => {
 });
 
 app.post("/api/student", (req, res) => {
-  const bodyData = req.body;
-  const id = studentArray.length + 1;
-  const name = req.body.name;
-  const currentClass = req.body.currentClass;
-  const division = req.body.division;
-  if (name && currentClass && division) {
+  if (req.body.name && req.body.currentClass && req.body.division) {
+    const id = studentArray.length + 1;
+    const name = req.body.name;
+    const currentClass = Number(req.body.currentClass);
+    const division = req.body.division;
     studentArray.push({
       id: id,
       name: name,
@@ -80,14 +79,13 @@ app.put("/api/student/:id", (req, res) => {
     }
   }
 });
-
 app.delete("/api/student/:id", (req, res) => {
-  let id = Number(req.params.id);
-  if (id >= 1 && id <= 7) {
-    studentArray.splice(id, 1);
-    res.sendStatus(200);
-  } else {
+  const object = studentArray[req.params.id - 1];
+  if (typeof object === "undefined") {
     res.sendStatus(404);
+  } else {
+    delete studentArray[req.params.id - 1];
+    res.sendStatus(200);
   }
 });
 
